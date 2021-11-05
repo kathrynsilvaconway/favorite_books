@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang = en>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+    rel="stylesheet" integrity=
+    "sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin
+    ="anonymous">
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='{% static "/style.css" %}'>
+    <script src='main.js'></script>
+</head>
+<body>
+    <h1>Welcome, {{user.first_name}}!</h1>
+    <div class="display_containers">
+        <h3>{{book.title}}</h3>
+        <h6>Added by: {{book.uploaded_by.first_name}}</h6>
+        <h6>Last Updated: {{book.updated_at}}</h6>
+        {% if request.session.id == book.uploaded_by.id %}
+            <h4>Update Book Description:</h4>
+            <form action="/update_book/{{book.id}}" method="POST">
+            {% csrf_token %}
+                <textarea name="desc" class="form-control"></textarea>
+                <input type="submit" value="Update" class="btn btn-secondary">
+            </form>
+            <form action="/delete_book" method="POST">
+            {% csrf_token %}
+                <input type="submit" value="Delete Book" class="btn btn-secondary">
+            </form>
+        {% endif %}
+        <h6>Description:</h6>
+        <p>{{book.desc}}</p>
+        <a href="/books">Return to Book List</a>
+
+    </div>
+    <div class="display_containers">
+        <h3>Users Who Like This Book:</h3>
+        <ul>
+            {% for like in book.liked_by.all %}
+                <li>{{like.first_name}} {{like.last_name}}</li>
+            {% endfor %}
+            {% if book not in user.books_liked.all %}
+                <a href="/add_to_likes/{{book.id}}">Add To Favorites</a>
+            {% else %}
+                <a href="/remove_like/{{book.id}}">Remove From Favorites</a>
+            {% endif %}
+            
+        </ul>
+    </div>
+
+</body>
+</html>
